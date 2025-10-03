@@ -1,0 +1,181 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Travel-themed color palette */
+    --background: 220 15% 97%;
+    --foreground: 215 25% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 15%;
+
+    /* Ocean blue primary */
+    --primary: 200 95% 45%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Coral accent */
+    --secondary: 16 85% 92%;
+    --secondary-foreground: 215 25% 15%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 20% 50%;
+
+    /* Tropical accent */
+    --accent: 165 75% 85%;
+    --accent-foreground: 215 25% 15%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 31% 91%;
+    --input: 214 31% 91%;
+    --ring: 200 95% 45%;
+
+    --radius: 0.75rem;
+
+    /* Custom travel gradients */
+    --gradient-ocean: linear-gradient(135deg, hsl(200 95% 45%), hsl(210 85% 55%));
+    --gradient-sunset: linear-gradient(135deg, hsl(16 85% 65%), hsl(30 90% 70%));
+    --gradient-tropical: linear-gradient(135deg, hsl(165 75% 50%), hsl(180 65% 45%));
+    --gradient-hero: linear-gradient(135deg, hsl(200 95% 45% / 0.9), hsl(210 85% 55% / 0.8));
+    
+    /* Shadows with travel theme */
+    --shadow-soft: 0 4px 20px hsl(200 95% 45% / 0.1);
+    --shadow-medium: 0 8px 30px hsl(200 95% 45% / 0.15);
+    --shadow-strong: 0 15px 40px hsl(200 95% 45% / 0.2);
+    
+    /* Animation variables */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Dark travel theme */
+    --background: 215 30% 8%;
+    --foreground: 210 40% 98%;
+
+    --card: 215 25% 12%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 215 25% 12%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Brighter ocean blue for dark mode */
+    --primary: 200 90% 55%;
+    --primary-foreground: 215 30% 8%;
+
+    --secondary: 215 20% 20%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 215 20% 15%;
+    --muted-foreground: 215 20% 65%;
+
+    /* Darker tropical accent */
+    --accent: 165 60% 25%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 215 20% 20%;
+    --input: 215 20% 20%;
+    --ring: 200 90% 55%;
+    
+    /* Dark mode gradients */
+    --gradient-ocean: linear-gradient(135deg, hsl(200 90% 55%), hsl(210 80% 45%));
+    --gradient-sunset: linear-gradient(135deg, hsl(16 75% 55%), hsl(30 80% 60%));
+    --gradient-tropical: linear-gradient(135deg, hsl(165 60% 40%), hsl(180 55% 35%));
+    --gradient-hero: linear-gradient(135deg, hsl(200 90% 55% / 0.8), hsl(210 80% 45% / 0.7));
+    
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+/* Custom utility classes for travel theme */
+@layer utilities {
+  .bg-gradient-ocean {
+    background: var(--gradient-ocean);
+  }
+  
+  .bg-gradient-sunset {
+    background: var(--gradient-sunset);
+  }
+  
+  .bg-gradient-tropical {
+    background: var(--gradient-tropical);
+  }
+  
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .shadow-medium {
+    box-shadow: var(--shadow-medium);
+  }
+  
+  .shadow-strong {
+    box-shadow: var(--shadow-strong);
+  }
+  
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  .transition-bounce {
+    transition: var(--transition-bounce);
+  }
+  
+  .hover-lift {
+    @apply transition-smooth hover:scale-105 hover:shadow-medium;
+  }
+  
+  .card-travel {
+    @apply bg-card rounded-lg shadow-soft border hover-lift transition-smooth;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
