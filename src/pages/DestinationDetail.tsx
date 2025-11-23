@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { destinations } from "@/data/destinations";
-import { MapPin, Star, Clock, Plus, Heart } from "lucide-react";
+import { MapPin, Star, Clock, Plus, Heart, Image as ImageIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 
@@ -20,8 +20,13 @@ const DestinationDetail = () => {
   const { id } = useParams();
   const { toast } = useToast();
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
   const destination = destinations.find(dest => dest.id === id);
+
+  const handleImageError = (imageId: string) => {
+    setImageErrors(prev => ({ ...prev, [imageId]: true }));
+  };
 
   if (!destination) {
     return <Navigate to="/destinations" replace />;
@@ -74,12 +79,24 @@ const DestinationDetail = () => {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <div className="relative h-96 overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${destination.image})` }}
-        >
-          <div className="absolute inset-0 bg-gradient-hero" />
-        </div>
+        {imageErrors[`hero-${destination.id}`] ? (
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600">
+            <div className="absolute inset-0 bg-gradient-hero" />
+          </div>
+        ) : (
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${destination.image})` }}
+          >
+            <img
+              src={destination.image}
+              alt={destination.name}
+              className="hidden"
+              onError={() => handleImageError(`hero-${destination.id}`)}
+            />
+            <div className="absolute inset-0 bg-gradient-hero" />
+          </div>
+        )}
         
         <div className="relative z-10 container mx-auto px-4 h-full flex items-end pb-8">
           <div className="text-white animate-fade-in">
@@ -172,19 +189,31 @@ const DestinationDetail = () => {
               {destination.attractions.map((attraction, index) => (
                 <Card key={attraction.id} className="overflow-hidden hover-lift animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
                   <div className="relative">
-                    <div 
-                      className="h-48 bg-cover bg-center"
-                      style={{ backgroundImage: `url(${attraction.image})` }}
-                    >
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute top-3 right-3 text-white hover:bg-white/20"
-                        onClick={() => toggleFavorite(attraction.id)}
+                    {imageErrors[attraction.id] ? (
+                      <div className="h-48 bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center">
+                        <ImageIcon className="h-12 w-12 text-white/50" />
+                      </div>
+                    ) : (
+                      <div 
+                        className="h-48 bg-cover bg-center"
+                        style={{ backgroundImage: `url(${attraction.image})` }}
                       >
-                        <Heart className={`h-5 w-5 ${favorites.includes(attraction.id) ? 'fill-red-500 text-red-500' : ''}`} />
-                      </Button>
-                    </div>
+                        <img
+                          src={attraction.image}
+                          alt={attraction.name}
+                          className="hidden"
+                          onError={() => handleImageError(attraction.id)}
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="absolute top-3 right-3 text-white hover:bg-white/20"
+                          onClick={() => toggleFavorite(attraction.id)}
+                        >
+                          <Heart className={`h-5 w-5 ${favorites.includes(attraction.id) ? 'fill-red-500 text-red-500' : ''}`} />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-2">
@@ -226,10 +255,23 @@ const DestinationDetail = () => {
               {destination.hotels.map((hotel, index) => (
                 <Card key={hotel.id} className="overflow-hidden hover-lift animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
                   <div className="md:flex">
-                    <div 
-                      className="h-48 md:h-auto md:w-1/2 bg-cover bg-center"
-                      style={{ backgroundImage: `url(${hotel.image})` }}
-                    />
+                    {imageErrors[hotel.id] ? (
+                      <div className="h-48 md:h-auto md:w-1/2 bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center">
+                        <ImageIcon className="h-12 w-12 text-white/50" />
+                      </div>
+                    ) : (
+                      <div 
+                        className="h-48 md:h-auto md:w-1/2 bg-cover bg-center"
+                        style={{ backgroundImage: `url(${hotel.image})` }}
+                      >
+                        <img
+                          src={hotel.image}
+                          alt={hotel.name}
+                          className="hidden"
+                          onError={() => handleImageError(hotel.id)}
+                        />
+                      </div>
+                    )}
                     <CardContent className="p-6 md:w-1/2">
                       <div className="flex items-start justify-between mb-2">
                         <h3 className="font-semibold text-lg">{hotel.name}</h3>
@@ -274,10 +316,23 @@ const DestinationDetail = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {destination.restaurants.map((restaurant, index) => (
                 <Card key={restaurant.id} className="overflow-hidden hover-lift animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
-                  <div 
-                    className="h-48 bg-cover bg-center"
-                    style={{ backgroundImage: `url(${restaurant.image})` }}
-                  />
+                  {imageErrors[restaurant.id] ? (
+                    <div className="h-48 bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center">
+                      <ImageIcon className="h-12 w-12 text-white/50" />
+                    </div>
+                  ) : (
+                    <div 
+                      className="h-48 bg-cover bg-center"
+                      style={{ backgroundImage: `url(${restaurant.image})` }}
+                    >
+                      <img
+                        src={restaurant.image}
+                        alt={restaurant.name}
+                        className="hidden"
+                        onError={() => handleImageError(restaurant.id)}
+                      />
+                    </div>
+                  )}
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="font-semibold text-lg">{restaurant.name}</h3>

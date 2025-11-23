@@ -57,7 +57,7 @@ const About = () => {
           </h1>
           <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed animate-slide-up">
             We're passionate about making travel planning effortless and enjoyable. 
-            Since 2020, we've helped over 50,000 travelers create unforgettable journeys around the world.
+            Since 2020, we've been helping travelers create unforgettable journeys around the world.
           </p>
         </div>
       </div>
@@ -94,28 +94,6 @@ const About = () => {
                 </CardContent>
               </Card>
             ))}
-          </div>
-        </div>
-
-        {/* Stats Section */}
-        <div className="bg-gradient-ocean text-white rounded-2xl p-12 mb-20 animate-fade-in">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold mb-2">50K+</div>
-              <div className="text-white/80">Happy Travelers</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold mb-2">1000+</div>
-              <div className="text-white/80">Destinations</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold mb-2">100K+</div>
-              <div className="text-white/80">Itineraries Created</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold mb-2">4.8★</div>
-              <div className="text-white/80">Average Rating</div>
-            </div>
           </div>
         </div>
 

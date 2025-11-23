@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, MapPin, Trash2, Download, Plus, Clock } from "lucide-react";
+import { Calendar, MapPin, Trash2, Download, Plus, Clock, Image as ImageIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ItineraryItem {
@@ -20,7 +20,12 @@ const Itinerary = () => {
   const [tripDuration, setTripDuration] = useState<number>(3);
   const [draggedItem, setDraggedItem] = useState<ItineraryItem | null>(null);
   const [density, setDensity] = useState<'comfortable' | 'compact'>('comfortable');
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
   const { toast } = useToast();
+
+  const handleImageError = (itemId: string, itemType: string) => {
+    setImageErrors(prev => ({ ...prev, [`${itemId}-${itemType}`]: true }));
+  };
 
   useEffect(() => {
     const savedItinerary = JSON.parse(localStorage.getItem('travelItinerary') || '[]');
@@ -291,10 +296,23 @@ const Itinerary = () => {
                               >
                                 <div className="flex items-start justify-between">
                                   <div className="flex-1">
-                                    <div
-                                      className={density === 'compact' ? 'w-full h-20 bg-cover bg-center rounded-md mb-2' : 'w-full h-24 bg-cover bg-center rounded-md mb-2'}
-                                      style={{ backgroundImage: `url(${item.image})` }}
-                                    />
+                                    {imageErrors[`${item.id}-${item.type}`] ? (
+                                      <div className={`${density === 'compact' ? 'h-20' : 'h-24'} w-full bg-gradient-to-br from-blue-400 to-indigo-600 rounded-md mb-2 flex items-center justify-center`}>
+                                        <ImageIcon className="h-8 w-8 text-white/50" />
+                                      </div>
+                                    ) : (
+                                      <div
+                                        className={density === 'compact' ? 'w-full h-20 bg-cover bg-center rounded-md mb-2' : 'w-full h-24 bg-cover bg-center rounded-md mb-2'}
+                                        style={{ backgroundImage: `url(${item.image})` }}
+                                      >
+                                        <img
+                                          src={item.image}
+                                          alt={item.name}
+                                          className="hidden"
+                                          onError={() => handleImageError(item.id, item.type)}
+                                        />
+                                      </div>
+                                    )}
                                     <p className="font-medium text-sm">{item.name}</p>
                                     <Badge variant="outline" className="text-xs mt-1">
                                       {item.type}
@@ -371,10 +389,23 @@ const Itinerary = () => {
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {dayItems.map(item => (
                               <div key={`${item.id}-${item.type}-overview`} className="flex items-center space-x-3 p-3 rounded-lg bg-accent">
-                                <div
-                                  className="w-16 h-16 bg-cover bg-center rounded-md flex-shrink-0"
-                                  style={{ backgroundImage: `url(${item.image})` }}
-                                />
+                                {imageErrors[`${item.id}-${item.type}`] ? (
+                                  <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-md flex-shrink-0 flex items-center justify-center">
+                                    <ImageIcon className="h-6 w-6 text-white/50" />
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="w-16 h-16 bg-cover bg-center rounded-md flex-shrink-0"
+                                    style={{ backgroundImage: `url(${item.image})` }}
+                                  >
+                                    <img
+                                      src={item.image}
+                                      alt={item.name}
+                                      className="hidden"
+                                      onError={() => handleImageError(item.id, item.type)}
+                                    />
+                                  </div>
+                                )}
                                 <div className="flex-1 min-w-0">
                                   <p className="font-medium text-sm truncate">{item.name}</p>
                                   <Badge variant="outline" className="text-xs">
@@ -399,10 +430,23 @@ const Itinerary = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {unassignedItems.map(item => (
                           <div key={`${item.id}-${item.type}-unassigned`} className="flex items-center space-x-3 p-3 rounded-lg bg-muted">
-                            <div
-                              className="w-16 h-16 bg-cover bg-center rounded-md flex-shrink-0"
-                              style={{ backgroundImage: `url(${item.image})` }}
-                            />
+                            {imageErrors[`${item.id}-${item.type}`] ? (
+                              <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-md flex-shrink-0 flex items-center justify-center">
+                                <ImageIcon className="h-6 w-6 text-white/50" />
+                              </div>
+                            ) : (
+                              <div
+                                className="w-16 h-16 bg-cover bg-center rounded-md flex-shrink-0"
+                                style={{ backgroundImage: `url(${item.image})` }}
+                              >
+                                <img
+                                  src={item.image}
+                                  alt={item.name}
+                                  className="hidden"
+                                  onError={() => handleImageError(item.id, item.type)}
+                                />
+                              </div>
+                            )}
                             <div className="flex-1 min-w-0">
                               <p className="font-medium text-sm truncate">{item.name}</p>
                               <Badge variant="outline" className="text-xs">
