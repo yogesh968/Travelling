@@ -113,16 +113,48 @@ const DestinationDetail = () => {
         <div className="mb-12 animate-scale-in">
           <h2 className="text-2xl font-bold mb-6 text-center">Location</h2>
           <div className="bg-card rounded-2xl shadow-soft overflow-hidden">
-            <iframe
-              src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyC4R6AN7SmujjPUIGKdyao2Kqitzr1kiRg&q=${encodeURIComponent(destination.name + ', ' + destination.country)}`}
-              width="100%"
-              height="400"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="w-full"
-            />
+            {destination.latitude && destination.longitude ? (
+              <>
+                <iframe
+                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${(destination.longitude - 0.05).toFixed(4)},${(destination.latitude - 0.05).toFixed(4)},${(destination.longitude + 0.05).toFixed(4)},${(destination.latitude + 0.05).toFixed(4)}&layer=mapnik&marker=${destination.latitude},${destination.longitude}`}
+                  width="100%"
+                  height="450"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="w-full"
+                  title={`Map of ${destination.name}`}
+                />
+                <div className="p-4 text-center bg-muted/30">
+                  <a
+                    href={`https://www.openstreetmap.org/?mlat=${destination.latitude}&mlon=${destination.longitude}&zoom=13`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-primary hover:underline font-medium"
+                  >
+                    View larger map on OpenStreetMap →
+                  </a>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="h-[450px] flex items-center justify-center bg-muted">
+                  <div className="text-center p-8">
+                    <MapPin className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                    <p className="text-muted-foreground">Map location for {destination.name}, {destination.country}</p>
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination.name + ', ' + destination.country)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-primary hover:underline font-medium mt-4 inline-block"
+                    >
+                      View on Google Maps →
+                    </a>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
