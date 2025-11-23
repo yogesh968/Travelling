@@ -20,15 +20,12 @@ const Navbar = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+    <nav className="sticky top-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-800/50 shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 group">
-            <Plane className="h-8 w-8 text-primary group-hover:rotate-12 transition-transform duration-300" />
-            <span className="text-xl font-bold bg-gradient-ocean bg-clip-text text-transparent">
-              TravelX
-            </span>
+          <Link to="/" className="flex items-center group">
+            <Plane className="h-8 w-8 text-blue-600 dark:text-blue-400 group-hover:rotate-12 transition-transform duration-300" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -39,8 +36,8 @@ const Navbar = () => {
                 to={item.path}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   isActive(item.path)
-                    ? "bg-primary text-primary-foreground shadow-soft"
-                    : "text-foreground hover:bg-accent hover:text-accent-foreground"
+                    ? "bg-blue-600 text-white shadow-md"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
               >
                 {item.name}
@@ -86,8 +83,8 @@ const Navbar = () => {
                   onClick={() => setIsOpen(false)}
                   className={`px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive(item.path)
-                      ? "bg-primary text-primary-foreground shadow-soft"
-                      : "text-foreground hover:bg-accent hover:text-accent-foreground"
+                      ? "bg-blue-600 text-white shadow-md"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                   }`}
                 >
                   {item.name}

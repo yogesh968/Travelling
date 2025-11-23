@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import heroImage from "@/assets/hero-travel.jpg";
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -21,30 +20,30 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      >
-        <div className="absolute inset-0 bg-gradient-hero" />
+      {/* Elegant Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600">
+        {/* Animated gradient overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/50 via-transparent to-purple-500/30" />
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
+          backgroundSize: '40px 40px'
+        }} />
       </div>
 
       {/* Content */}
       <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
         <div className="animate-fade-in">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight text-white drop-shadow-lg">
             Plan Your Trips
-            <span className="block bg-gradient-sunset bg-clip-text text-transparent">
-              Dream Trip
-            </span>
           </h1>
-          <p className="text-lg md:text-xl lg:text-2xl mb-8 md:mb-12 text-white/90 max-w-2xl mx-auto px-4">
+          <p className="text-lg md:text-xl lg:text-2xl mb-8 md:mb-12 text-white/95 max-w-2xl mx-auto px-4 font-light">
             Discover amazing destinations, create perfect itineraries, and make memories that last a lifetime
           </p>
         </div>
 
         {/* Search Box */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 md:p-6 shadow-strong max-w-5xl mx-auto animate-slide-up">
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl p-4 md:p-6 shadow-2xl max-w-5xl mx-auto animate-slide-up border border-white/20">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
             {/* Destination */}
             <div className="relative sm:col-span-2 lg:col-span-1">
@@ -84,7 +83,7 @@ const Hero = () => {
             {/* Search Button */}
             <Button 
               onClick={handleSearch}
-              className="h-10 md:h-12 bg-gradient-ocean hover:scale-105 transition-all duration-200 shadow-medium text-sm md:text-base px-4 md:px-6"
+              className="h-10 md:h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 hover:scale-105 transition-all duration-200 shadow-lg text-sm md:text-base px-4 md:px-6 text-white"
             >
               <Search className="h-4 w-4 md:h-5 md:w-5 mr-1 md:mr-2" />
               <span className="hidden sm:inline">Search</span>
