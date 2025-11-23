@@ -2,15 +2,19 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import DestinationCard from "@/components/DestinationCard";
 import { destinations } from "@/data/destinations";
-import { Search, Filter, MapPin } from "lucide-react";
+import { Search, Filter, MapPin, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+
+type SortOption = "name" | "price-low" | "price-high" | "rating";
 
 const Destinations = () => {
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
+  const [sortBy, setSortBy] = useState<SortOption>("name");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,6 +32,26 @@ const Destinations = () => {
                          dest.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCountry = !selectedCountry || dest.country === selectedCountry;
     return matchesSearch && matchesCountry;
+  });
+
+  // Sort destinations
+  const sortedDestinations = [...filteredDestinations].sort((a, b) => {
+    switch (sortBy) {
+      case "name":
+        return a.name.localeCompare(b.name);
+      case "price-low":
+        const priceA = parseInt(a.price.replace(/[^0-9]/g, ""));
+        const priceB = parseInt(b.price.replace(/[^0-9]/g, ""));
+        return priceA - priceB;
+      case "price-high":
+        const priceAHigh = parseInt(a.price.replace(/[^0-9]/g, ""));
+        const priceBHigh = parseInt(b.price.replace(/[^0-9]/g, ""));
+        return priceBHigh - priceAHigh;
+      case "rating":
+        return b.rating - a.rating;
+      default:
+        return 0;
+    }
   });
 
   const handleExplore = (id: string) => {
@@ -59,8 +83,30 @@ const Destinations = () => {
                 placeholder="Search destinations..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    // Search is already reactive, just focus on results
+                    document.getElementById('destinations-grid')?.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
                 className="pl-10 h-12"
               />
+            </div>
+
+            {/* Sort */}
+            <div className="flex items-center gap-2">
+              <ArrowUpDown className="h-5 w-5 text-muted-foreground" />
+              <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+                <SelectTrigger className="w-40 h-12">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="name">Name (A-Z)</SelectItem>
+                  <SelectItem value="rating">Rating (High)</SelectItem>
+                  <SelectItem value="price-low">Price (Low-High)</SelectItem>
+                  <SelectItem value="price-high">Price (High-Low)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Country Filter */}
@@ -102,17 +148,30 @@ const Destinations = () => {
         </div>
 
         {/* Results Count */}
-        <div className="mb-6">
+        <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
           <p className="text-muted-foreground">
-            Found {filteredDestinations.length} destinations
+            Found {sortedDestinations.length} destination{sortedDestinations.length !== 1 ? 's' : ''}
             {searchTerm && ` for "${searchTerm}"`}
             {selectedCountry && ` in ${selectedCountry}`}
           </p>
+          {(searchTerm || selectedCountry) && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setSearchTerm("");
+                setSelectedCountry("");
+                setSortBy("name");
+              }}
+            >
+              Clear Filters
+            </Button>
+          )}
         </div>
 
         {/* Destinations Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredDestinations.map((destination, index) => (
+        <div id="destinations-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {sortedDestinations.map((destination, index) => (
             <div 
               key={destination.id} 
               className="animate-fade-in"
@@ -127,7 +186,7 @@ const Destinations = () => {
         </div>
 
         {/* No Results */}
-        {filteredDestinations.length === 0 && (
+        {sortedDestinations.length === 0 && (
           <div className="text-center py-16 animate-fade-in">
             <div className="text-6xl mb-4">🌍</div>
             <h3 className="text-2xl font-semibold mb-2">No destinations found</h3>

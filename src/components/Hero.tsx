@@ -1,21 +1,75 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin, Calendar } from "lucide-react";
+import { Search, MapPin, Calendar, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { destinations } from "@/data/destinations";
 
 const Hero = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [destination, setDestination] = useState("");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
+  const [dateError, setDateError] = useState("");
+
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split('T')[0];
+
+  // Get popular destinations for quick links
+  const popularDestinations = destinations
+    .filter(dest => dest.featured)
+    .slice(0, 4);
+
+  useEffect(() => {
+    // Validate dates when they change
+    if (checkIn && checkOut) {
+      const checkInDate = new Date(checkIn);
+      const checkOutDate = new Date(checkOut);
+      
+      if (checkOutDate <= checkInDate) {
+        setDateError("Check-out date must be after check-in date");
+      } else {
+        setDateError("");
+      }
+    } else {
+      setDateError("");
+    }
+  }, [checkIn, checkOut]);
 
   const handleSearch = () => {
+    // Validate dates before searching
+    if (checkIn && checkOut) {
+      const checkInDate = new Date(checkIn);
+      const checkOutDate = new Date(checkOut);
+      
+      if (checkOutDate <= checkInDate) {
+        toast({
+          title: "Invalid dates",
+          description: "Check-out date must be after check-in date",
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+
     if (destination.trim()) {
       navigate(`/destinations?search=${encodeURIComponent(destination.trim())}`);
     } else {
       navigate('/destinations');
     }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  const handleQuickDestination = (destName: string) => {
+    setDestination(destName);
+    navigate(`/destinations?search=${encodeURIComponent(destName)}`);
   };
 
   return (
@@ -47,34 +101,49 @@ const Hero = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
             {/* Destination */}
             <div className="relative sm:col-span-2 lg:col-span-1">
-              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 md:h-5 md:w-5" />
+              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 md:h-5 md:w-5 z-10" />
               <Input
                 placeholder="Where to?"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
+                onKeyPress={handleKeyPress}
                 className="pl-9 md:pl-10 h-10 md:h-12 text-foreground text-sm md:text-base"
               />
             </div>
 
             {/* Check-in */}
             <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 md:h-5 md:w-5" />
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 md:h-5 md:w-5 z-10 pointer-events-none" />
               <Input
                 type="date"
                 placeholder="Check-in"
                 value={checkIn}
-                onChange={(e) => setCheckIn(e.target.value)}
+                min={today}
+                onChange={(e) => {
+                  setCheckIn(e.target.value);
+                  // Auto-set check-out to be at least 1 day after check-in
+                  if (e.target.value && checkOut) {
+                    const checkInDate = new Date(e.target.value);
+                    const checkOutDate = new Date(checkOut);
+                    if (checkOutDate <= checkInDate) {
+                      const nextDay = new Date(checkInDate);
+                      nextDay.setDate(nextDay.getDate() + 1);
+                      setCheckOut(nextDay.toISOString().split('T')[0]);
+                    }
+                  }
+                }}
                 className="pl-9 md:pl-10 h-10 md:h-12 text-foreground text-sm md:text-base"
               />
             </div>
 
             {/* Check-out */}
             <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 md:h-5 md:w-5" />
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 md:h-5 md:w-5 z-10 pointer-events-none" />
               <Input
                 type="date"
                 placeholder="Check-out"
                 value={checkOut}
+                min={checkIn || today}
                 onChange={(e) => setCheckOut(e.target.value)}
                 className="pl-9 md:pl-10 h-10 md:h-12 text-foreground text-sm md:text-base"
               />
@@ -83,30 +152,43 @@ const Hero = () => {
             {/* Search Button */}
             <Button 
               onClick={handleSearch}
-              className="h-10 md:h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 hover:scale-105 transition-all duration-200 shadow-lg text-sm md:text-base px-4 md:px-6 text-white"
+              disabled={!!dateError}
+              className="h-10 md:h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 hover:scale-105 transition-all duration-200 shadow-lg text-sm md:text-base px-4 md:px-6 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Search className="h-4 w-4 md:h-5 md:w-5 mr-1 md:mr-2" />
               <span className="hidden sm:inline">Search</span>
               <span className="sm:hidden">Go</span>
             </Button>
           </div>
+          
+          {/* Date Error Message */}
+          {dateError && (
+            <div className="mt-3 flex items-center gap-2 text-red-600 text-sm animate-slide-up">
+              <AlertCircle className="h-4 w-4" />
+              <span>{dateError}</span>
+            </div>
+          )}
         </div>
 
-        {/* Floating Stats */}
-        <div className="grid grid-cols-3 gap-4 md:gap-8 mt-12 md:mt-16 animate-scale-in">
-          <div className="text-center">
-            <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 md:mb-2">1000+</div>
-            <div className="text-white/80 text-xs md:text-sm lg:text-base">Destinations</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 md:mb-2">50K+</div>
-            <div className="text-white/80 text-xs md:text-sm lg:text-base">Happy Travelers</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 md:mb-2">24/7</div>
-            <div className="text-white/80 text-xs md:text-sm lg:text-base">Support</div>
+        {/* Popular Destinations Quick Links */}
+        <div className="mt-8 md:mt-12 animate-fade-in">
+          <p className="text-white/80 text-sm md:text-base mb-4">Popular destinations:</p>
+          <div className="flex flex-wrap justify-center gap-2 md:gap-3">
+            {popularDestinations.map((dest) => (
+              <Button
+                key={dest.id}
+                variant="outline"
+                size="sm"
+                onClick={() => handleQuickDestination(dest.name)}
+                className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 hover:scale-105 transition-all duration-200 text-xs md:text-sm"
+              >
+                <MapPin className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                {dest.name}
+              </Button>
+            ))}
           </div>
         </div>
+
       </div>
 
       {/* Scroll indicator */}
